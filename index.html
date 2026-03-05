@@ -458,12 +458,16 @@ button { cursor: pointer; font-family: inherit; }
   #dash-content { padding: 20px 16px; }
 }
 </style>
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
 <!-- HEADER -->
 <header id="header">
-  <button id="btn-back" style="display:none;background:none;border:none;color:var(--text-mute);font-size:0.88rem;padding:0 12px 0 0;display:none;align-items:center;gap:6px;" onclick="goBack()">
+  <button id="btn-back" style="display:none;background:none;border:none;color:var(--text-mute);font-size:0.88rem;padding:0 12px 0 0;align-items:center;gap:6px;cursor:pointer;" onclick="goBack()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
     Back
   </button>
@@ -726,11 +730,6 @@ button { cursor: pointer; font-family: inherit; }
 
 <!-- NOTIF -->
 <div id="notif"></div>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
 /* ═══════════════════════════════════════════
