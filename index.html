@@ -421,6 +421,30 @@ button { cursor: pointer; font-family: inherit; }
 .notif-toast.success { border-color: var(--success); color: var(--success); }
 .notif-toast.error   { border-color: #ef4444; color: #ef4444; }
 
+
+/* ── Skeletons ── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+.skeleton-writer-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.skeleton-line { height: 14px; margin-bottom: 10px; }
+.skeleton-line.short { width: 60%; }
+.skeleton-line.xshort { width: 35%; }
+
+/* ── Page transition ── */
+.page { opacity: 0; transition: opacity 0.15s ease; }
+.page.active { opacity: 1; }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   #writers-grid { grid-template-columns: 1fr; padding: 16px; }
@@ -841,20 +865,40 @@ function logout() {
 
 // ── Profiles ──
 async function getProfile(uid) {
+  if (_cache.profiles[uid]) return _cache.profiles[uid];
   try {
     const doc = await db.collection('users').doc(uid).get();
-    return doc.exists ? doc.data() : null;
+    const data = doc.exists ? doc.data() : null;
+    if (data) _cache.profiles[uid] = data;
+    return data;
   } catch { return null; }
 }
+
+// ── Cache ──
+const _cache = { writers: null, profiles: {}, stories: {} };
 
 // ── Explore ──
 let allWriters = [];
 async function loadWriters() {
   const grid = document.getElementById('writers-grid');
-  grid.innerHTML = '<div style="color:var(--text-mute);font-size:0.9rem;padding:20px;">Loading...</div>';
+  // Show cached instantly
+  if (_cache.writers) {
+    allWriters = _cache.writers;
+    renderWriters(allWriters);
+    return;
+  }
+  // Skeleton
+  grid.innerHTML = Array(6).fill(0).map(() => `
+    <div class="skeleton-writer-card">
+      <div class="skeleton skeleton-line" style="width:55%;height:16px;margin-bottom:12px;"></div>
+      <div class="skeleton skeleton-line" style="width:90%;"></div>
+      <div class="skeleton skeleton-line short"></div>
+      <div class="skeleton skeleton-line xshort" style="margin-top:8px;"></div>
+    </div>`).join('');
   try {
     const snap = await db.collection('users').where('role', '==', 'writer').get();
     allWriters = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    _cache.writers = allWriters;
     renderWriters(allWriters);
   } catch (e) {
     grid.innerHTML = '<div style="color:var(--text-mute);padding:20px;">Could not load writers.</div>';
@@ -890,15 +934,33 @@ function filterWriters(q) {
 // ── Writer Profile ──
 async function openWriter(writerId) {
   showPage('writer');
-  const doc = await db.collection('users').doc(writerId).get();
-  if (!doc.exists) return;
-  currentWriter = { id: writerId, ...doc.data() };
+  // Use cached writer data instantly if available
+  const cached = allWriters.find(w => w.id === writerId);
+  if (cached) {
+    currentWriter = cached;
+    const initial = (currentWriter.name || '?')[0].toUpperCase();
+    document.getElementById('writer-avatar').textContent   = initial;
+    document.getElementById('writer-name').textContent     = currentWriter.name || 'Anonymous';
+    document.getElementById('writer-bio-text').textContent = currentWriter.bio  || 'No bio yet.';
+  }
+  // Show skeleton for stories while loading
+  document.getElementById('stories-container').innerHTML = Array(3).fill(0).map(() => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:10px;">
+      <div class="skeleton" style="height:15px;width:50%;margin-bottom:8px;border-radius:4px;"></div>
+      <div class="skeleton" style="height:12px;width:75%;border-radius:4px;"></div>
+    </div>`).join('');
+
+  if (!cached) {
+    const doc = await db.collection('users').doc(writerId).get();
+    if (!doc.exists) return;
+    currentWriter = { id: writerId, ...doc.data() };
 
   const initial = (currentWriter.name || '?')[0].toUpperCase();
   document.getElementById('writer-avatar').textContent      = initial;
   document.getElementById('writer-name').textContent        = currentWriter.name || 'Anonymous';
   document.getElementById('writer-bio-text').textContent    = currentWriter.bio  || 'No bio yet.';
 
+  }
   // Check if current user is connected to this writer's Patreon
   const btn = document.getElementById('writer-connect-btn');
   const isConnected = currentUser && await checkPatreonConnection(currentUser.uid, writerId);
@@ -1263,6 +1325,14 @@ function showNotif(msg, type = 'success') {
 
 // ── Init ──
 showPage('home');
+// Preload writers in background
+setTimeout(() => {
+  db.collection('users').where('role', '==', 'writer').get()
+    .then(snap => {
+      _cache.writers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      allWriters = _cache.writers;
+    }).catch(() => {});
+}, 800);
 </script>
 </body>
 </html>
