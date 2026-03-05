@@ -439,7 +439,7 @@ button { cursor: pointer; font-family: inherit; }
 
 <!-- HEADER -->
 <header id="header">
-  <div id="logo">📖 PatronReader</div>
+  <div id="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#lg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f96854"/><stop offset="100%" stop-color="#9b59f5"/></linearGradient></defs><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>PatronReader</div>
   <nav id="header-nav">
     <button class="header-btn" onclick="showPage('explore')">Explore</button>
     <button class="header-btn" id="btn-dashboard" style="display:none;" onclick="showPage('dashboard')">Dashboard</button>
@@ -459,22 +459,22 @@ button { cursor: pointer; font-family: inherit; }
   </div>
   <div class="home-features">
     <div class="feature-card">
-      <div class="feature-icon">🔒</div>
+      <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f96854" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
       <div class="feature-title">Patron-Only Access</div>
       <div class="feature-desc">Content is locked to verified Patreon subscribers — no sharing, no leaking.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📖</div>
+      <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9b59f5" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
       <div class="feature-title">Beautiful Reader</div>
       <div class="feature-desc">Single page, double page, thumbnails, dark mode, font control & fullscreen.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">✍️</div>
+      <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
       <div class="feature-title">Easy Publishing</div>
       <div class="feature-desc">Writers upload directly — no code needed. Chapters are organized automatically.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">⚡</div>
+      <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
       <div class="feature-title">Instant Sync</div>
       <div class="feature-desc">Connect your Patreon once — subscribers get access automatically.</div>
     </div>
@@ -503,7 +503,7 @@ button { cursor: pointer; font-family: inherit; }
         <h1 id="writer-name">Writer Name</h1>
         <p id="writer-bio-text">Bio goes here</p>
         <button id="writer-connect-btn" onclick="connectPatreon()">
-          <span>🎨</span> Connect via Patreon
+          Connect via Patreon
         </button>
       </div>
     </div>
@@ -544,7 +544,7 @@ button { cursor: pointer; font-family: inherit; }
 <div class="page" id="page-dashboard">
   <div id="dash-header">
     <h1>Writer Dashboard</h1>
-    <button class="submit-btn" onclick="showDashTab('new-story')">+ New Story</button>
+    <button class="submit-btn" onclick="showDashTab('new-story')">New Story</button>
   </div>
   <div id="dash-tabs">
     <button class="dash-tab active" onclick="showDashTab('overview')">Overview</button>
@@ -675,8 +675,8 @@ button { cursor: pointer; font-family: inherit; }
       <div class="form-group">
         <label class="form-label">I am a...</label>
         <div class="auth-role-select">
-          <button class="auth-role-btn active" id="role-reader" onclick="setRole('reader')">📖 Reader</button>
-          <button class="auth-role-btn" id="role-writer" onclick="setRole('writer')">✍️ Writer</button>
+          <button class="auth-role-btn active" id="role-reader" onclick="setRole('reader')">Reader</button>
+          <button class="auth-role-btn" id="role-writer" onclick="setRole('writer')">Writer</button>
         </div>
       </div>
       <div class="form-group">
@@ -704,8 +704,7 @@ button { cursor: pointer; font-family: inherit; }
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<script defer>
-window.addEventListener('load', function() {
+<script>
 /* ═══════════════════════════════════════════
    PATRONREADER — App Logic
    ═══════════════════════════════════════════ */
@@ -879,10 +878,10 @@ async function openWriter(writerId) {
   const btn = document.getElementById('writer-connect-btn');
   const isConnected = currentUser && await checkPatreonConnection(currentUser.uid, writerId);
   if (isConnected) {
-    btn.innerHTML = '<span>✅</span> Patron Access Active';
+    btn.innerHTML = '✓ Patron Access Active';
     btn.classList.add('connected');
   } else {
-    btn.innerHTML = '<span>🎨</span> Connect via Patreon';
+    btn.innerHTML = 'Connect via Patreon';
     btn.classList.remove('connected');
   }
 
@@ -958,7 +957,7 @@ async function openStory(storyId, hasAccess) {
     document.getElementById('reader-story-title').textContent = currentStory.title;
     document.getElementById('reader-stage').innerHTML = `
       <div class="story-lock">
-        <div class="story-lock-icon">🔒</div>
+        <div class="story-lock-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f96854" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
         <h3 class="story-lock-title">Patron-Only Story</h3>
         <p class="story-lock-desc">Connect your Patreon to read this story.</p>
         <button class="story-lock-btn" onclick="connectPatreon()">Connect Patreon</button>
@@ -1239,7 +1238,6 @@ function showNotif(msg, type = 'success') {
 
 // ── Init ──
 showPage('home');
-}); // end window.addEventListener
 </script>
 </body>
 </html>
