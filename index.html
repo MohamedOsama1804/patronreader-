@@ -803,11 +803,21 @@ auth.onAuthStateChanged(async user => {
 function showPage(name, track = true) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  if (track) pageHistory.push(name);
+  if (track) {
+    pageHistory.push(name);
+    history.pushState({ page: name }, '', '#' + name);
+  }
   updateBackBtn();
   if (name === 'explore') loadWriters();
   if (name === 'dashboard') loadDashboard();
 }
+
+// Handle browser back/forward buttons
+window.addEventListener('popstate', function(e) {
+  const page = e.state?.page || 'home';
+  pageHistory.pop();
+  showPage(page, false);
+});
 
 // ── Auth ──
 function openAuth(tab = 'login') {
